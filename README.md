@@ -7,17 +7,11 @@ appropriate measurement signals into the code.
 
 **The code is not recommended for use in applications without adding a suitable source of randomness.**
 
-# STM32 ARM Core and platform.
-# ------------------------------
-#
-# For more info:
-# https://arduino.github.io/arduino-cli/latest/platform-specification/
-
+### STM32 ARM Core and platform.
 name=STM32 boards groups (Board to be selected from Tools submenu 'Board part number')
 version=2.7.0-dev
 
-# STM compile variables
-# ----------------------
+### STM compile variables
 compiler.stm.extra_include="-I{build.source.path}" "-I{build.core.path}/avr" "-I{build.core.path}/stm32" "-I{build.core.path}/stm32/LL" "-I{build.core.path}/stm32/usb" "-I{build.core.path}/stm32/OpenAMP" "-I{build.core.path}/stm32/usb/hid" "-I{build.core.path}/stm32/usb/cdc" "-I{build.system.path}/Drivers/{build.series}_HAL_Driver/Inc" "-I{build.system.path}/Drivers/{build.series}_HAL_Driver/Src" "-I{build.system.path}/{build.series}" "-I{build.system.path}/Middlewares/ST/STM32_USB_Device_Library/Core/Inc" "-I{build.system.path}/Middlewares/ST/STM32_USB_Device_Library/Core/Src" {build.virtio_extra_include}
 
 compiler.warning_flags=-w
@@ -58,14 +52,14 @@ compiler.ldflags=-Wl,--no-warn-rwx-segments
 compiler.size.cmd=arm-none-eabi-size
 compiler.define=-DARDUINO=
 
-# These can be overridden in boards.txt
+### These can be overridden in boards.txt
 build.st_extra_flags=
 build.extra_flags=
 build.bootloader_flags=
 build.ldscript=ldscript.ld
 build.variant_h=variant_generic.h
 
-# These can be overridden in platform.local.txt
+### These can be overridden in platform.local.txt
 compiler.c.st_extra_flags={build.peripheral_pins}
 compiler.c.extra_flags=
 compiler.c.std=gnu17
@@ -80,31 +74,21 @@ compiler.elf2hex.extra_flags=
 
 compiler.arm.cmsis.c.flags="-I{runtime.tools.CMSIS-5.9.0.path}/CMSIS/Core/Include/" "-I{build.system.path}/Drivers/CMSIS/Device/ST/{build.series}/Include/" "-I{build.system.path}/Drivers/CMSIS/Device/ST/{build.series}/Source/Templates/gcc/" "-I{runtime.tools.CMSIS-5.9.0.path}/CMSIS/DSP/Include" "-I{runtime.tools.CMSIS-5.9.0.path}/CMSIS/DSP/PrivateInclude"
 
-# USB Flags
-# ---------
+### USB Flags
 build.usb_flags=-DUSBCON {build.usb_speed} -DUSBD_VID={build.vid} -DUSBD_PID={build.pid} -DHAL_PCD_MODULE_ENABLED
 
-# Specify defaults for vid/pid, since an empty value is impossible to
-# detect in the preprocessor, but a 0 can be checked for.
-# Boards should specify either both, or neither of these.
+### Specify defaults for vid/pid, since an empty value is impossible to detect in the preprocessor, but a 0 can be checked for. Boards should specify either both, or neither of these.
 build.vid=0
 build.pid=0
 
-# To customize the USB manufacturer or product string, must add defines
-# for them, e.g.:
-#    some_board.build.extra_flags='-DUSB_MANUFACTURER_STRING="My Company"' '-DUSB_PRODUCT_STRING="My Product"'
-# This cannot be done using build variables and specifying the -D
-# options here, since then the default would be a defined, but empty macro
-# that the preprocessor cannot detect.
-
-# VirtIO RPMsg Serial Flags
+### VirtIO RPMsg Serial Flags
 build.virtio_flags=-DVIRTIOCON -DNO_ATOMIC_64_SUPPORT -DMETAL_INTERNAL -DMETAL_MAX_DEVICE_REGIONS=2 -DVIRTIO_SLAVE_ONLY -DVIRTIO_LOG
 build.virtio_extra_include="-I{build.system.path}/Middlewares/OpenAMP" "-I{build.system.path}/Middlewares/OpenAMP/open-amp/lib/include" "-I{build.system.path}/Middlewares/OpenAMP/libmetal/lib/include" "-I{build.system.path}/Middlewares/OpenAMP/virtual_driver"
 
-# Build information's
+### Build information's
 build.info.flags=-D{build.series} -DARDUINO={runtime.ide.version} -DARDUINO_{build.board} -DARDUINO_ARCH_{build.arch} -DBOARD_NAME="{build.board}" -DVARIANT_H="{build.variant_h}"
 
-# Defaults config
+### Defaults config
 build.xSerial=-DHAL_UART_MODULE_ENABLED
 build.enable_usb=
 build.usb_speed=
@@ -117,59 +101,57 @@ build.flags.optimize=-Os
 build.flags.debug=-DNDEBUG
 build.flags.ldspecs=--specs=nano.specs
 
-# Pre and post build hooks
+### Pre and post build hooks
 build.opt.name=build.opt
 build.opt.path={build.path}/sketch/{build.opt.name}
 
 extras.path={build.system.path}/extras
 
-# Create {build.opt} if not exists in the output sketch dir and force include of SrcWrapper library
+### Create {build.opt} if not exists in the output sketch dir and force include of SrcWrapper library
 recipe.hooks.prebuild.1.pattern="{extras.path}/prebuild.sh" "{build.path}" "{build.source.path}" "{runtime.platform.path}"
 recipe.hooks.prebuild.1.pattern.windows="{runtime.tools.STM32Tools.path}/win/busybox.exe" sh "{extras.path}/prebuild.sh" "{build.path}" "{build.source.path}" "{runtime.platform.path}"
 recipe.hooks.postbuild.1.pattern="{extras.path}/postbuild.sh" "{build.path}" "{build.series}" "{runtime.platform.path}"
 recipe.hooks.postbuild.1.pattern.windows="{runtime.tools.STM32Tools.path}/win/busybox.exe" sh "{extras.path}/postbuild.sh" "{build.path}" "{build.series}" "{runtime.platform.path}"
 
-# compile patterns
-# ---------------------
+### compile patterns
 
-## Compile c files
+#### Compile c files
 recipe.c.o.pattern="{compiler.path}{compiler.c.cmd}" {compiler.c.flags} {build.info.flags} {compiler.c.st_extra_flags} {compiler.c.extra_flags} {build.st_extra_flags} {build.extra_flags} {compiler.arm.cmsis.c.flags} {includes} "{source_file}" -o "{object_file}"
 
-## Compile c++ files
+#### Compile c++ files
 recipe.cpp.o.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} {build.info.flags} {compiler.cpp.extra_flags} {build.st_extra_flags} {build.extra_flags} {compiler.arm.cmsis.c.flags} {includes} "{source_file}" -o "{object_file}"
 
-## Compile S files
+#### Compile S files
 recipe.S.o.pattern="{compiler.path}{compiler.S.cmd}" {compiler.S.flags} {build.info.flags} {compiler.S.st_extra_flags} {compiler.S.extra_flags} {build.st_extra_flags} {build.extra_flags} {compiler.arm.cmsis.c.flags} {includes} "{source_file}" -o "{object_file}"
 
-## Create archives
+#### Create archives
 recipe.ar.pattern="{compiler.path}{compiler.ar.cmd}" {compiler.ar.flags} {compiler.ar.extra_flags} "{archive_file_path}" "{object_file}"
 
-## Combine gc-sections, archives, and objects
+#### Combine gc-sections, archives, and objects
 recipe.c.combine.pattern="{compiler.path}{compiler.c.elf.cmd}" {compiler.c.elf.flags} "-Wl,--default-script={build.variant.path}/{build.ldscript}" "-Wl,--script={build.system.path}/ldscript.ld" "-Wl,-Map,{build.path}/{build.project_name}.map" {compiler.c.elf.extra_flags} {compiler.ldflags} -o "{build.path}/{build.project_name}.elf" "-L{build.path}" -Wl,--start-group {object_files} {compiler.libraries.ldflags} "{archive_file_path}" -lc -Wl,--end-group -lm -lgcc -lstdc++
 
-## Create output (.bin file)
+#### Create output (.bin file)
 recipe.objcopy.bin.pattern="{compiler.path}{compiler.objcopy.cmd}" {compiler.elf2bin.flags} {compiler.elf2bin.extra_flags} "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.bin"
 
-## Create output (.hex file)
+#### Create output (.hex file)
 recipe.objcopy.hex.pattern="{compiler.path}{compiler.objcopy.cmd}" {compiler.elf2hex.flags} {compiler.elf2hex.extra_flags} "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.hex"
 
 build.preferred_out_format=bin
 
-## Save binary
+#### Save binary
 recipe.output.tmp_file={build.project_name}.{build.preferred_out_format}
 recipe.output.save_file={build.project_name}.{build.board}.{build.preferred_out_format}
 
-## Compute size
+#### Compute size
 recipe.size.pattern="{compiler.path}{compiler.size.cmd}" -A "{build.path}/{build.project_name}.elf"
 recipe.size.regex=^(?:\.text|\.data|\.rodata)\s+([0-9]+).*
 recipe.size.regex.data=^(?:\.data|\.bss|\.noinit)\s+([0-9]+).*
 recipe.size.regex.eeprom=^(?:\.eeprom)\s+([0-9]+).*
 
 
-# Uploader tool
-# -------------------
+### Uploader tool
 
-# Upload to board via mass storage
+### Upload to board via mass storage
 tools.massStorageCopy.cmd=massStorageCopy.sh
 tools.massStorageCopy.cmd.windows=massStorageCopy.bat
 tools.massStorageCopy.path={runtime.tools.STM32Tools.path}/win
@@ -179,7 +161,7 @@ tools.massStorageCopy.upload.params.verbose=
 tools.massStorageCopy.upload.params.quiet=
 tools.massStorageCopy.upload.pattern="{path}/{cmd}" {upload.verbose} -I "{build.path}/{build.project_name}.bin" -O "{node}"
 
-# STM32CubeProgrammer upload
+### STM32CubeProgrammer upload
 tools.stm32CubeProg.path={runtime.tools.STM32Tools.path}
 tools.stm32CubeProg.busybox=
 tools.stm32CubeProg.busybox.windows={path}/win/busybox.exe
@@ -188,7 +170,7 @@ tools.stm32CubeProg.upload.params.verbose=
 tools.stm32CubeProg.upload.params.quiet=
 tools.stm32CubeProg.upload.pattern="{busybox}" sh "{path}/{cmd}" {upload.protocol} "{build.path}/{build.project_name}.bin" {build.flash_offset} {upload.options}
 
-# blackmagic upload for generic STM32
+### blackmagic upload for generic STM32
 tools.bmp_upload.cmd=arm-none-eabi-gdb
 tools.bmp_upload.path={runtime.tools.xpack-arm-none-eabi-gcc.path}/bin
 tools.bmp_upload.upload.speed=230400
@@ -197,7 +179,7 @@ tools.bmp_upload.upload.params.quiet=--batch-silent
 tools.bmp_upload.upload.pattern="{path}/{cmd}" -nx -b {upload.speed} {upload.verbose} -ex "set confirm off" -ex "target extended-remote {serial.port}" -ex "monitor swdp_scan" -ex "attach 1" -ex "load" -ex "compare-sections" -ex "kill" "{build.path}/{build.project_name}.elf"
 tools.bmp_upload.upload.pattern.windows="{path}/{cmd}" -nx -b {upload.speed} {upload.verbose} -ex "set confirm off" -ex "target extended-remote \\.\{serial.port}" -ex "monitor swdp_scan" -ex "attach 1" -ex "load" -ex "compare-sections" -ex "kill" "{build.path}/{build.project_name}.elf"
 
-# HID flash 2.2 (HID bootloader v2.2 for STM32F1 and STM32F4 series)
+### HID flash 2.2 (HID bootloader v2.2 for STM32F1 and STM32F4 series)
 tools.hid_upload.cmd=hid-flash
 tools.hid_upload.cmd.windows=hid-flash.exe
 tools.hid_upload.path={runtime.tools.STM32Tools.path}/win
@@ -207,7 +189,7 @@ tools.hid_upload.upload.params.verbose=-d
 tools.hid_upload.upload.params.quiet=n
 tools.hid_upload.upload.pattern="{path}/{cmd}" "{build.path}/{build.project_name}.bin" {serial.port.file}
 
-# Upload using Maple bootloader over DFU
+### Upload using Maple bootloader over DFU
 tools.maple_upload.script=maple_upload.sh
 tools.maple_upload.busybox=
 tools.maple_upload.busybox.windows={path}/win/busybox.exe
@@ -216,7 +198,7 @@ tools.maple_upload.upload.params.verbose=-d
 tools.maple_upload.upload.params.quiet=n
 tools.maple_upload.upload.pattern="{busybox}" sh "{path}/{script}" {serial.port.file} {upload.altID} {upload.usbID} "{build.path}/{build.project_name}.bin"
 
-# STM32MP1 self-contained shell script
+### STM32MP1 self-contained shell script
 tools.remoteproc_gen.path={runtime.tools.STM32Tools.path}
 tools.remoteproc_gen.busybox=
 tools.remoteproc_gen.busybox.windows={path}/win/busybox.exe
@@ -225,10 +207,7 @@ tools.remoteproc_gen.upload.params.verbose=
 tools.remoteproc_gen.upload.params.quiet=
 tools.remoteproc_gen.upload.pattern="{busybox}" sh "{path}/{script}" generate "{build.path}/{build.project_name}.elf" "{build.path}/run_arduino_{build.project_name}.sh"
 
-# Debugger configuration (general options)
-# ----------------------------------------
-# EXPERIMENTAL feature:
-# - this is alpha and may be subject to change without notice
+### Debugger configuration (general options)
 debug.executable={build.path}/{build.project_name}.elf
 debug.toolchain=gcc
 debug.toolchain.path={compiler.path}
