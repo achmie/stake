@@ -7,7 +7,9 @@ appropriate measurement signals into the code.
 
 **The code is not recommended for use in applications without adding a suitable source of randomness.**
 
-### STM32 ARM Core and platform.
+# Arduino environment configuration
+
+### STM32 ARM Core and platform
 - name=STM32 boards groups (Board to be selected from Tools submenu 'Board part number')
 - version=2.7.0-dev
 
